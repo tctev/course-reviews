@@ -61,8 +61,3 @@ def add_review():
         (course, int(rating), body),
     )
     return redirect("/", 303)
-
-
-@app.get("/health")
-def health():
-    return "ok"

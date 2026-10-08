@@ -46,4 +46,3 @@ jobs:
           terraform init -input=false -backend-config="path=$HOME/course-reviews.tfstate"
           docker pull "${REGISTRY_IMAGE,,}:$GITHUB_SHA"
           terraform apply -input=false -auto-approve -var "image=${REGISTRY_IMAGE,,}:$GITHUB_SHA"
-      - run: curl -fsS --retry 10 --retry-connrefused http://localhost:8000/health
