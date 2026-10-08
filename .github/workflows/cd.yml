@@ -42,7 +42,7 @@ jobs:
           terraform_wrapper: false
       - working-directory: terraform
         run: |
-          # state lives outside the workspace, checkout wipes it otherwise
-          terraform init -input=false -backend-config="path=$HOME/course-reviews.tfstate"
+          # the workspace and HOME get wiped on runner restart, RUNNER_ROOT does not
+          terraform init -input=false -backend-config="path=$RUNNER_ROOT/course-reviews.tfstate"
           docker pull "${REGISTRY_IMAGE,,}:$GITHUB_SHA"
           terraform apply -input=false -auto-approve -var "image=${REGISTRY_IMAGE,,}:$GITHUB_SHA"
