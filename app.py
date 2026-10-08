@@ -6,7 +6,7 @@ from contextlib import closing
 from flask import Flask, abort, redirect, render_template_string, request
 
 DB_PATH = os.environ.get("DB_PATH", "reviews.db")
-COURSE_CODE = re.compile(r"[A-Z]{2}\d{3}[A-Z0-9]")  # e.g. DD2482, DD142X
+COURSE_CODE = re.compile(r"[A-Z]{2}\d{3}[A-Z0-9]")
 
 PAGE = """<!doctype html>
 <title>KTH course reviews</title>
@@ -61,8 +61,3 @@ def add_review():
         (course, int(rating), body),
     )
     return redirect("/", 303)
-
-
-@app.get("/health")
-def health():
-    return "ok"

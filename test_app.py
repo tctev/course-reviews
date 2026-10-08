@@ -26,7 +26,3 @@ def test_rejects_bad_input():
         {"course": "DD2482", "rating": "3", "body": "x" * 2001},
     ]:
         assert client.post("/", data=data).status_code == 400
-
-
-def test_health():
-    assert client.get("/health").text == "ok"
