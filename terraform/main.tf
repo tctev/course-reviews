@@ -5,7 +5,6 @@ terraform {
       version = "~> 4.6"
     }
   }
-  # path set with -backend-config in CD, defaults to ./terraform.tfstate locally
   backend "local" {}
 }
 
