@@ -1,0 +1,4 @@
+reviews.db
+__pycache__/
+.terraform/
+*.tfstate*
