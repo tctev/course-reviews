@@ -1,6 +1,6 @@
 # AI usage
 
-We used an AI assistant in this project, mostly for proofreading our documentation, for finding the right documentation of the libraries and tools we used, and as help when something broke. The final code, workflows and Terraform configuration were written and decided by us. We are responsible for everything in this repository and we can explain all parts of it.
+We used an AI assistant in this project, mostly for proofreading our documentation, for finding the right documentation of the libraries and tools we used, and as help when something broke. The assistant also helped write parts of the code, workflows and Terraform configuration, and the design decisions were ours. We are responsible for everything in this repository and we can explain all parts of it.
 
 ## Proofreading
 
@@ -18,14 +18,14 @@ For new parts of the project we asked the assistant where to find the official d
 
 We always checked against the official documentation itself and did not rely only on the summary from the assistant, because sometimes it gets option names wrong or mixes up versions.
 
-Since most of these libraries and tools were new to us, we also asked the assistant about implementation on different occasions, for example how a function could be written or what different ways there are to implement something. We used the answers to understand the options, then picked the approach that fit our project and adapted it ourselves.
+Since most of these libraries and tools were new to us, we also asked the assistant about implementation on different occasions, for example how a function could be written or what different ways there are to implement something. Some of these answers ended up in the code, after we went through them and adapted them to our project.
 
 ## Troubleshooting
 
-When a CI or deployment job failed, we pasted the error from the GitHub Actions logs to the assistant and used the answer as a starting point. Before changing anything we checked the real cause ourselves in the job logs. Every fix was done in a pull request and had to pass CI before merging.
+When a CI or deployment job failed, we pasted the error from the GitHub Actions logs to the assistant and used the answer as a starting point. Before changing anything we checked the real cause ourselves in the job logs. Every fix to the repository was done in a pull request and had to pass CI before merging.
 
 ## How we checked the output
 
-Nothing the assistant suggested was applied automatically. A team member reviewed every command, configuration change and piece of documentation before it was committed, and all changes went through the normal pull request and CI process. The assistant had no access to the deployment machine and did not make any deployment decisions for us.
+In some steps the assistant made changes directly, both in the repository and on the machines we used for deployment, while we followed and checked the results. Once `main` was protected, every change to the repository went through a pull request and CI.
 
 AI answers can be incomplete or just wrong, so we treated them as suggestions and not as a reliable source.
