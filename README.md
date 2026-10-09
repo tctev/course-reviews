@@ -2,8 +2,6 @@
 
 Flask + SQLite app for anonymous KTH course reviews, used for our DevOps course project.
 
-Live: http://9.205.152.251:8000
-
 ## How it works
 
 - CI (every PR, GitHub-hosted runner): Ruff, pytest, Docker build, CodeQL. `main` is protected and needs `test` to pass.
