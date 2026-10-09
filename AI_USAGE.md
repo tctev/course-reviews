@@ -1,29 +1,31 @@
-# AI-Assisted Development
+# AI usage
 
-AI-assisted tools were used during the development of this project as support for design discussions, documentation, troubleshooting, and review.
+We used an AI assistant in this project, mostly for proofreading our documentation, for finding the right documentation of the libraries and tools we used, and as help when something broke. The final code, workflows and Terraform configuration were written and decided by us. We are responsible for everything in this repository and we can explain all parts of it.
 
-The team remained responsible for all technical decisions and manually reviewed and executed the suggested changes.
+## Proofreading
 
-## Usage
+English is not our first language, so we asked the assistant to proofread the README and the report for spelling, grammar and sentences that were hard to understand. We also used it to go through the grading criteria of the course together with our documents and check that we cover all the project requirements (CI, CD, Infrastructure as Code, development platform, quality or security automation, a repository that can be run from the documentation, and the 2-3 page report). We went through the suggestions and kept only the ones we agreed with.
 
-| Area | How AI was used | Human verification |
-|---|---|---|
-| Architecture and design | Discussed the CI/CD architecture, Terraform setup, self-hosted runner, persistent SQLite volume, and project trade-offs. | The proposed design was reviewed by the team before implementation and compared with the project requirements. |
-| Documentation | Helped structure and review the project README, including the architecture description, deployment flow, limitations, and Mermaid diagram. | The documentation was manually reviewed before being committed and merged through a pull request. |
-| CI/CD improvements | Suggested adding a deployment test to the GitHub Actions workflows. | Changes were reviewed through Git diffs and submitted through pull requests. CI runs were used to validate the workflow changes. |
-| Troubleshooting | Helped analyze GitHub Actions behavior | Using the actual GitHub Actions job status and logs. |
-| Project review | Helped compare the implementation against the KTH DevOps project grading criteria and identify missing documentation and reproducibility improvements. | The team reviewed the recommendations and decided which changes were appropriate for the scope of the project. |
+## Finding documentation
 
-## Verification and Responsibility
+For new parts of the project we asked the assistant where to find the official documentation and which options we need. We did this for:
 
-AI-generated suggestions were not applied automatically.
+- Flask and Gunicorn (the app and how it runs inside the container)
+- the `kreuzwerker/docker` Terraform provider (container, network and volume)
+- GitHub Actions (workflow syntax, token permissions, self-hosted runners, pushing images to GHCR)
+- Dependabot and CodeQL configuration
+- pytest and Ruff
 
-All commands, configuration changes, and documentation were reviewed by a team member before being committed. Changes to the repository were submitted through the normal pull request and CI process.
+We always checked against the official documentation itself and did not rely only on the summary from the assistant, because sometimes it gets option names wrong or mixes up versions.
 
-The AI assistant did not have autonomous access to the deployment machine or make deployment decisions on behalf of the team.
+Since most of these libraries and tools were new to us, we also asked the assistant about implementation on different occasions, for example how a function could be written or what different ways there are to implement something. We used the answers to understand the options, then picked the approach that fit our project and adapted it ourselves.
 
-## Limitations
+## Troubleshooting
 
-AI suggestions can be incomplete or incorrect. For example, a smoke-test command initially assumed that `curl` was installed on the self-hosted runner. The resulting deployment failure was investigated using the actual job logs before deciding how to correct the environment.
+When a CI or deployment job failed, we pasted the error from the GitHub Actions logs to the assistant and used the answer as a starting point. Before changing anything we checked the real cause ourselves in the job logs. Every fix was done in a pull request and had to pass CI before merging.
 
-For this reason, AI output was treated as a suggestion rather than as an authoritative source.
+## How we checked the output
+
+Nothing the assistant suggested was applied automatically. A team member reviewed every command, configuration change and piece of documentation before it was committed, and all changes went through the normal pull request and CI process. The assistant had no access to the deployment machine and did not make any deployment decisions for us.
+
+AI answers can be incomplete or just wrong, so we treated them as suggestions and not as a reliable source.
