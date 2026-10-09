@@ -1,185 +1,34 @@
 # KTH Course Reviews
 
-A small Flask and SQLite web application for anonymous KTH course reviews.
+Flask + SQLite app for anonymous KTH course reviews, used for our DevOps course project.
 
-The application is intentionally simple so the project can focus on a complete DevOps workflow: pull requests, CI, container builds, security automation, Infrastructure as Code, and automated deployment.
+Live: http://9.205.152.251:8000
 
-## Architecture
+## How it works
 
-The application runs as a Docker container.
+- CI (every PR, GitHub-hosted runner): Ruff, pytest, Docker build, CodeQL. `main` is protected and needs `test` to pass.
+- CD (merge to `main`): builds the image tagged with the commit SHA, pushes it to GHCR, then a self-hosted runner on an Azure VM runs `terraform apply` and a smoke test.
+- Terraform (`terraform/main.tf`): the container, network and the volume where SQLite keeps the reviews.
+- Dependabot keeps pip, Actions, Docker and Terraform dependencies updated.
 
-- Flask serves the web application on port 8000.
-- SQLite stores reviews in `/data/reviews.db`.
-- A Docker volume persists the database independently of the application container.
-- Terraform manages the Docker network, volume, image, and container.
-- GitHub Actions provides CI and CD.
-- Docker images are stored in GitHub Container Registry.
-
-Deployment flow:
-
-```mermaid
-flowchart LR
-    A[Pull Request] --> B[CI: Ruff, pytest, Docker build, CodeQL]
-    B --> C[Merge to main]
-    C --> D[Build image]
-    D --> E[Tag with commit SHA]
-    E --> F[Push to GHCR]
-    F --> G[Self-hosted runner]
-    G --> H[Terraform apply]
-    H --> I[Running application]
-```
-
-## Local Development
-
-Requirements:
-
-- Python 3.13
-- Docker
-- Terraform
-
-Install the Python dependencies:
+## Run locally
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
 pip install -r requirements-dev.txt
-```
-
-Run the tests:
-
-```bash
 pytest
-```
 
-Run the linter and formatting checks:
-
-```bash
-ruff check .
-ruff format --check .
-```
-
-## Docker
-
-Build the image:
-
-```bash
 docker build -t course-reviews:local .
+cd terraform && terraform init && terraform apply
 ```
 
-Run the container with a persistent Docker volume:
+Then open http://localhost:8000
 
-```bash
-docker volume create course-reviews-db
+## Runner setup
 
-docker run --rm \
-  -p 8000:8000 \
-  -v course-reviews-db:/data \
-  course-reviews:local
-```
-
-The application is then available at:
-
-```text
-http://localhost:8000
-```
-
-## Infrastructure as Code
-
-Terraform defines:
-
-- the Docker network,
-- the persistent SQLite volume,
-- the application image,
-- the application container.
-
-To deploy locally:
-
-```bash
-cd terraform
-terraform init
-terraform apply
-```
-
-The Docker image can also be selected with the `image` variable:
-
-```bash
-terraform apply -var="image=course-reviews:local"
-```
-
-## Continuous Integration
-
-Every pull request runs on a GitHub-hosted runner and performs:
-
-- Ruff linting
-- Ruff formatting validation
-- pytest
-- Docker image build
-- CodeQL analysis
-
-The main branch is intended to require these checks before changes can be merged.
-
-## Continuous Deployment
-
-A push to `main` triggers the deployment workflow.
-
-The workflow:
-
-1. builds the Docker image,
-2. tags it with the Git commit SHA,
-3. pushes the image to GitHub Container Registry,
-4. runs the deployment job on a self-hosted runner,
-5. passes the immutable image tag to Terraform,
-6. runs `terraform apply`.
-
-The self-hosted runner is used only for trusted deployment code from `main`. Pull request code runs on GitHub-hosted runners.
-
-## Self-Hosted Runner
-
-The deployment job runs on a self-hosted GitHub Actions runner because Terraform needs access to the Docker daemon on the deployment machine.
-
-The runner host requires:
-
-- a Linux machine with network access to GitHub and GHCR,
-- Docker installed and running,
-- the GitHub Actions runner registered to this repository,
-- permission for the runner user to access the Docker daemon,
-- `curl` installed for the post-deployment smoke test,
-- port 8000 available for the application.
-
-Terraform itself is installed by the deployment workflow using `hashicorp/setup-terraform`.
-
-The runner also defines a persistent `RUNNER_ROOT` directory. Terraform state is stored at:
-
-```text
-$RUNNER_ROOT/course-reviews.tfstate
-```
-The state is intentionally kept outside the temporary GitHub Actions workspace so that it survives workflow and runner restarts.
-
-For reliable deployments, the runner should run as a system service so that it starts automatically when the host machine starts.
-
-The deployment machine is a single point of failure in this setup. If the machine or runner is offline, the Docker image can still be built and pushed to GHCR, but the deployment job waits until a self-hosted runner becomes available.
-
-## Security and Quality Automation
-
-The repository uses:
-
-- CodeQL for static security analysis.
-- Dependabot for Python, GitHub Actions, Docker, and Terraform dependencies.
-- Ruff for code quality and formatting.
-- pytest for automated tests.
-
-## AI-Assisted Development
-
-The use of AI-assisted tools during development will be documented in the final project report, including what they were used for and how suggestions were reviewed and verified.
+The VM needs Docker (runner user in the `docker` group), `curl`, port 8000 open and the GitHub runner installed as a service. Terraform state is kept in `$HOME/course-reviews.tfstate` on the VM.
 
 ## Limitations
 
-This setup is intentionally small and suitable for a course project.
-
-Important limitations include:
-
-- SQLite is not intended for horizontally scaled application replicas.
-- Terraform state is stored locally on the self-hosted deployment runner.
-- Deployment depends on a single self-hosted machine.
-- A production system would normally use a remote Terraform backend with locking and backups.
-- A public repository with a self-hosted runner requires careful separation between untrusted pull request workflows and trusted deployment workflows.
+- One VM and SQLite, so no scaling or failover.
+- Terraform state is a local file, no locking or backups.
+- Plain HTTP, no HTTPS.
