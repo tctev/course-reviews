@@ -133,6 +133,32 @@ The workflow:
 
 The self-hosted runner is used only for trusted deployment code from `main`. Pull request code runs on GitHub-hosted runners.
 
+## Self-Hosted Runner
+
+The deployment job runs on a self-hosted GitHub Actions runner because Terraform needs access to the Docker daemon on the deployment machine.
+
+The runner host requires:
+
+- a Linux machine with network access to GitHub and GHCR,
+- Docker installed and running,
+- the GitHub Actions runner registered to this repository,
+- permission for the runner user to access the Docker daemon,
+- `curl` installed for the post-deployment smoke test,
+- port 8000 available for the application.
+
+Terraform itself is installed by the deployment workflow using `hashicorp/setup-terraform`.
+
+The runner also defines a persistent `RUNNER_ROOT` directory. Terraform state is stored at:
+
+```text
+$RUNNER_ROOT/course-reviews.tfstate
+```
+The state is intentionally kept outside the temporary GitHub Actions workspace so that it survives workflow and runner restarts.
+
+For reliable deployments, the runner should run as a system service so that it starts automatically when the host machine starts.
+
+The deployment machine is a single point of failure in this setup. If the machine or runner is offline, the Docker image can still be built and pushed to GHCR, but the deployment job waits until a self-hosted runner becomes available.
+
 ## Security and Quality Automation
 
 The repository uses:
