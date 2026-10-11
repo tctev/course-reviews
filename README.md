@@ -25,7 +25,7 @@ Then open http://localhost:8000
 
 The deploy runs on a self-hosted runner, so it can be any Linux machine you control. We use an Azure VM so the runner doesn't have to sit on our own laptops.
 
-The machine needs Docker (runner user in the `docker` group), `curl`, port 8000 open and the GitHub runner installed as a service. Terraform state is kept in `$HOME/course-reviews.tfstate` on it.
+The machine needs Docker (runner user in the `docker` group), `curl` and the GitHub runner installed as a service. Port 8000 only has to be open if you want to reach the app from outside. Ours is closed, the VM is only for the CI/CD. Terraform state is kept in `$HOME/course-reviews.tfstate` on it.
 
 ## Limitations
 
